@@ -1,15 +1,16 @@
-# [Project name]
+# Discord Deepgram Transcription Bot
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A Discord voice bot that joins a channel on command, streams speech to Deepgram for live transcription, and posts attributed transcripts back to Discord.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/discord-deepgram-bot run dev` — run the Discord transcription bot
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secrets: `DISCORD_BOT_TOKEN`, `DEEPGRAM_API_KEY`
 
 ## Stack
 
@@ -22,15 +23,21 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `services/discord-deepgram-bot` — Discord gateway, voice receive, and Deepgram streaming transcription
+- `artifacts/api-server` — shared API service
+- `artifacts/mockup-sandbox` — canvas component preview service
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Uses the Discord bot token rather than the Replit Discord user OAuth connection; the bot must join voice channels as a bot account.
+- Streams decoded voice audio directly to Deepgram over a secure WebSocket; audio is not written to local files.
+- Transcription starts only after `/transcribe` and stops on `/stop`, with a visible notice posted to Discord.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- `/transcribe` joins the invoking user's voice channel and posts speaker-attributed Deepgram transcripts.
+- `/stop` ends the voice session and closes active Deepgram streams.
+- `/help` lists the bot commands.
 
 ## User preferences
 
